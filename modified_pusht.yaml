@@ -86,10 +86,10 @@ policy:
       shape:
       - 2 
     obs:
-      # agent_pos:
-      #   shape:
-      #   - 2
-      #   type: low_dim
+      agent_pos:
+        shape:
+        - 2
+        type: low_dim
       image:
         shape:
         - 3
@@ -101,10 +101,10 @@ shape_meta:
     shape:
     - 2
   obs:
-    # agent_pos:
-    #   shape:
-    #   - 2
-    #   type: low_dim
+    agent_pos:
+      shape:
+      - 2
+      type: low_dim
     image:
       shape:
       - 3
