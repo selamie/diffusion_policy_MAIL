@@ -86,10 +86,10 @@ policy:
       shape:
       - 3
     obs:
-      observation:
-        shape:
-        - 6
-        type: low_dim
+      # agent_pos:
+      #   shape:
+      #   - 2
+      #   type: low_dim
       image:
         shape:
         - 3
@@ -101,10 +101,10 @@ shape_meta:
     shape:
     - 3
   obs:
-    observation:
-      shape:
-      - 6
-      type: low_dim
+    # agent_pos:
+    #   shape:
+    #   - 2
+    #   type: low_dim
     image:
       shape:
       - 3
@@ -120,7 +120,7 @@ task:
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: data/panda_images1_obs.zarr
+    zarr_path: data/panda_garbage-3.zarr
   env_runner:
     _target_: diffusion_policy.env_runner.panda_runner.PandaRunner
     fps: 10
@@ -146,10 +146,10 @@ task:
       shape:
       - 3
     obs:
-      observation:
-        shape:
-        - 6
-        type: low_dim
+      # agent_pos:
+      #   shape:
+      #   - 2
+      #   type: low_dim
       image:
         shape:
         - 3
@@ -166,7 +166,7 @@ training:
   lr_warmup_steps: 500 #this is probably too high but...
   max_train_steps: null
   max_val_steps: null
-  num_epochs: 50
+  num_epochs: 100
   resume: true
   rollout_every: 25 #50
   sample_every: 2

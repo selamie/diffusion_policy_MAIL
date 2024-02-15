@@ -1,9 +1,7 @@
 import gym
 import panda_gym
-from panda_gym.envs.panda_tasks.panda_robodiff import PandaReachDiffEnv
+from panda_robodiff import PandaReachDiffEnv
 import numpy as np
-
-#prob need to ultimately rewrite this but...? 
 
 class PandaEnv(PandaReachDiffEnv):
     def _init_(self, render_size):

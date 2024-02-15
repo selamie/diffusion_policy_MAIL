@@ -16,11 +16,9 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 
 
-#prob need to ultimately rewrite this but...? 
-
 class PandaReachDiffEnv(RobotTaskEnv):
 
-    def __init__(self, render_size=120, render: bool = False, reward_type: str = "sparse", control_type: str = "ee") -> None:
+    def __init__(self, render_size=120, render: bool = False, reward_type: str = "dense", control_type: str = "ee") -> None:
         self.sim = PyBullet(render=render)
         self.robot = Panda(self.sim, block_gripper=True, base_position=np.array([-0.6, 0.0, 0.0]), control_type=control_type)
         self.task = Reach(self.sim, reward_type=reward_type, get_ee_position=self.robot.get_ee_position)
@@ -53,13 +51,15 @@ class PandaReachDiffEnv(RobotTaskEnv):
                             yaw = 45, #45
                             pitch= -45,
                             roll = 0)
-        #import pdb; pdb.set_trace()
+      
         img = np.delete(img,3,axis=2)
         #img = np.moveaxis(img.astype(np.float32) / 255, -1, 0)
 
         robot_obs = self.robot.get_obs()  # robot state
         task_obs = self.task.get_obs()  # object position, velocity, etc...
         observation = np.concatenate([robot_obs, task_obs])
+        #task_obs is empty for this array so observation IS agent_pos
+        #has shape 6 but can try "turning off" velocity in next env layer if u want
         achieved_goal = self.task.get_achieved_goal()
         return {
             "observation": observation,
@@ -68,4 +68,3 @@ class PandaReachDiffEnv(RobotTaskEnv):
             "image": img
         }
     
-

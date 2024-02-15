@@ -3,8 +3,8 @@ import click
 from diffusion_policy.common.replay_buffer import ReplayBuffer
 import gym
 import panda_gym
-#from panda_gym.envs.panda_tasks.panda_reach import PandaReachEnv 
-from panda_gym.envs.panda_tasks.panda_robodiff import PandaReachDiffEnv 
+#from panda_gym.envs.panda_tasks.panda_robodiff import PandaReachDiffEnv 
+from diffusion_policy.env.panda.panda_robodiff import PandaReachDiffEnv
 import time
 import cv2
 import matplotlib.pyplot as plt
@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 #@click.option('-o', '--output', required=True)
 #@click.option('-rs', '--render_size', default=96, type=int)
 #@click.option('-hz', '--control_hz', default=10, type=int)
-def main(output="data/panda_garbage-3.zarr"):
+def main(output="data/panda_garbage-4.zarr"):
     """
     Collect demonstration for the Push-T task.
     
@@ -45,10 +45,11 @@ def main(output="data/panda_garbage-3.zarr"):
     # create replay buffer in read-write mode
     replay_buffer = ReplayBuffer.create_from_path(output, mode='a')
 
-    #env:PandaReachEnv = gym.make('PandaReach-v2', render=True) #type annotation for pylance
-    env:PandaReachDiffEnv = gym.make('PandaDiff-v0', render=True) #type annotation for pylance
+    #env:PandaReachDiffEnv = gym.make('PandaDiff-v0', render=True) #type annotation for pylance
     #info = env._get_info()
     #env = PandaReachEnv()
+
+    env = PandaReachDiffEnv(render_size=120,render=True)
 
     observation = env.reset()
 
@@ -59,13 +60,17 @@ def main(output="data/panda_garbage-3.zarr"):
         #print(f'starting seed {seed}')
         env.seed(seed)
 
+
         current_position = observation["observation"][0:3]
         desired_position = observation["desired_goal"][0:3]
         act = 5.0 * (desired_position - current_position)
         
         observation, reward, done, info = env.step(act)
-    
 
+        import pdb; pdb.set_trace()
+
+        print(reward)
+        input()    
         # img = env.render(mode='rgb_array',
         #                     width = 120, 
         #                     height= 120,

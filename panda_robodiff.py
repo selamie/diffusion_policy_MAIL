@@ -20,7 +20,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 class PandaReachDiffEnv(RobotTaskEnv):
 
-    def __init__(self, render_size=120, render: bool = False, reward_type: str = "sparse", control_type: str = "ee") -> None:
+    def __init__(self, render_size=120, render: bool = False, reward_type="dense", control_type: str = "ee") -> None:
         self.sim = PyBullet(render=render)
         self.robot = Panda(self.sim, block_gripper=True, base_position=np.array([-0.6, 0.0, 0.0]), control_type=control_type)
         self.task = Reach(self.sim, reward_type=reward_type, get_ee_position=self.robot.get_ee_position)
@@ -62,6 +62,8 @@ class PandaReachDiffEnv(RobotTaskEnv):
         observation = np.concatenate([robot_obs, task_obs])
         achieved_goal = self.task.get_achieved_goal()
         return {
+            #TODO: 
+            #"agent_pos": robot_obs,
             "observation": observation,
             "desired_goal": self.task.get_goal(),
             "achieved_goal": achieved_goal,
