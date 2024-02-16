@@ -1,6 +1,6 @@
 import gym
 import panda_gym
-from panda_robodiff import PandaReachDiffEnv
+from diffusion_policy.env.panda.panda_robodiff_single import PandaReachDiffEnv
 import numpy as np
 
 class PandaEnv(PandaReachDiffEnv):
@@ -11,15 +11,14 @@ class PandaEnv(PandaReachDiffEnv):
     def _get_obs(self):
         obs = super()._get_obs()
 
-        img1 = obs['cam1']
-        img1 = np.moveaxis(img1.astype(np.float32) / 255, -1, 0)
-        img2 = obs['cam2']
-        img2 = np.moveaxis(img2.astype(np.float32) / 255, -1, 0)
+        img = obs['image']
+        img_obs = np.moveaxis(img.astype(np.float32) / 255, -1, 0)
+        ##^literally just so their evaluator is happy...
+    
         #replace with a reshaped image
-        obs['cam1'] = img1
-        obs['cam2'] = img2
-
-        self.render_cache = img2
+        obs['image'] = img_obs
+        
+        self.render_cache = img
 
         return obs
     

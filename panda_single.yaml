@@ -28,15 +28,15 @@ logging:
   group: null
   id: null
   mode: online
-  name: 2024.01.30-train_diffusion_unet_hybrid_panda_image
+  name: single-train_diffusion_unet_hybrid_panda_image
   project: diffusion_policy_panda
   resume: true
   tags:
   - train_diffusion_unet_hybrid
-  - panda_image
+  - panda_image_single
   - default
 multi_run:
-  run_dir: data/outputs/2024.01.30/2024.01.30-train_diffusion_unet_hybrid_panda_image
+  run_dir: data/outputs/single/train_diffusion_unet_hybrid_panda_image
   wandb_name_base: 2024.01.30-train_diffusion_unet_hybrid_panda_image
 n_action_steps: 8
 n_latency_steps: 0
@@ -56,8 +56,8 @@ policy:
   _target_: diffusion_policy.policy.diffusion_unet_hybrid_image_policy.DiffusionUnetHybridImagePolicy
   cond_predict_scale: true
   crop_shape:
-   - 110
-   - 110
+  # - 110
+  # - 110
   diffusion_step_embed_dim: 128
   down_dims:
   - 512
@@ -90,13 +90,7 @@ policy:
         shape:
         - 6
         type: low_dim
-      cam1:
-        shape:
-        - 3
-        - 120
-        - 120
-        type: rgb
-      cam2:
+      image:
         shape:
         - 3
         - 120
@@ -111,30 +105,24 @@ shape_meta:
       shape:
       - 6
       type: low_dim
-    cam1:
+    image:
       shape:
       - 3
       - 120
       - 120
       type: rgb
-    cam2:
-      shape:
-      - 3
-      - 120
-      - 120
-      type: rgb      
 task:
   dataset:
-    _target_: diffusion_policy.dataset.panda_dataset.PandaDataset
+    _target_: diffusion_policy.dataset.panda_single_dataset.PandaSingleDataset
     horizon: 16
     max_train_episodes: 90
     pad_after: 7
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: data/panda_2cams.zarr
+    zarr_path: data/panda_single_view.zarr
   env_runner:
-    _target_: diffusion_policy.env_runner.panda_runner.PandaRunner
+    _target_: diffusion_policy.env_runner.panda_single_runner.PandaSingleRunner
     fps: 10
     legacy_test: true
     max_steps: 400
@@ -162,13 +150,7 @@ task:
         shape:
         - 6
         type: low_dim
-      cam1:
-        shape:
-        - 3
-        - 120
-        - 120
-        type: rgb
-      cam2:
+      image:
         shape:
         - 3
         - 120

@@ -27,19 +27,12 @@ import matplotlib.pyplot as plt
 #@click.option('-o', '--output', required=True)
 #@click.option('-rs', '--render_size', default=96, type=int)
 #@click.option('-hz', '--control_hz', default=10, type=int)
-def main(output="data/panda_garbage-4.zarr"):
+def main(output="data/panda_garbage.zarr"):
     """
-    Collect demonstration for the Push-T task.
+    Collect demonstration data.
     
     Usage: python demo_pusht.py -o data/pusht_demo.zarr
     
-    This script is compatible with both Linux and MacOS.panda_garbage
-    Hover mouse close to the blue circle to start.
-    Push the T block into the green area. 
-    The episode will automatically terminate if the task is succeeded.
-    Press "Q" to exit.
-    Press "R" to retry.
-    Hold "Space" to pause.
     """
     
     # create replay buffer in read-write mode
@@ -49,7 +42,7 @@ def main(output="data/panda_garbage-4.zarr"):
     #info = env._get_info()
     #env = PandaReachEnv()
 
-    env = PandaReachDiffEnv(render_size=120,render=True)
+    env = PandaReachDiffEnv(render_size=420,render=True)
 
     observation = env.reset()
 
@@ -66,11 +59,7 @@ def main(output="data/panda_garbage-4.zarr"):
         act = 5.0 * (desired_position - current_position)
         
         observation, reward, done, info = env.step(act)
-
-        import pdb; pdb.set_trace()
-
-        print(reward)
-        input()    
+        
         # img = env.render(mode='rgb_array',
         #                     width = 120, 
         #                     height= 120,
@@ -90,19 +79,24 @@ def main(output="data/panda_garbage-4.zarr"):
         # plt.imshow(img[:,:,2])
         # plt.show()
         
-        ##show image for debugging
-        # img = observation['image']
-        # print(img.shape)
+        #show image for debugging
+        # print(observation.keys())
+        # img = observation['cam1']
+        # img2 = observation['cam2']
+        # print(img2.shape)
         # plt.figure()
         # plt.imshow(img)
+        # plt.figure()
+        # plt.imshow(img2)
         # plt.show()
-        # time.sleep(0.1)
+        
+        
+       
 
-
-        # state = np.concatenate([current_position, desired_position])
 
         data = {
-            'image': observation['image'],
+            'cam1': observation['cam1'],
+            'cam2': observation['cam2'],
             'action': np.float32(act),
             'observation': np.float32(observation['observation']),
             'achieved_goal': np.float32(observation['achieved_goal']),
@@ -110,7 +104,9 @@ def main(output="data/panda_garbage-4.zarr"):
         }
 
         episode.append(data)
+        
 
+        #print("success",env.task.is_success(observation['achieved_goal'],observation['desired_goal']))
         if done:
             print(len(episode))
             data_dict=dict()

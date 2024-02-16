@@ -10,7 +10,7 @@ from diffusion_policy.model.common.normalizer import LinearNormalizer
 from diffusion_policy.dataset.base_dataset import BaseImageDataset
 from diffusion_policy.common.normalize_util import get_image_range_normalizer
 
-class PandaDataset(BaseImageDataset):
+class PandaSingleDataset(BaseImageDataset):
     def __init__(self,
             zarr_path, 
             horizon=1,
@@ -24,7 +24,7 @@ class PandaDataset(BaseImageDataset):
         super().__init__()
         self.replay_buffer = ReplayBuffer.copy_from_path(
             #zarr_path, keys=['img', 'state', 'action'])
-            zarr_path, keys=['cam1', 'cam2', 'observation', 'action','achieved_goal','desired_goal'])
+            zarr_path, keys=['image', 'observation', 'action','achieved_goal','desired_goal'])
         val_mask = get_val_mask(
             n_episodes=self.replay_buffer.n_episodes, 
             val_ratio=val_ratio,
@@ -62,35 +62,33 @@ class PandaDataset(BaseImageDataset):
         #THISS produces paramater_dict (!!)
         data = {
             'action': self.replay_buffer['action'],
-            'observation': self.replay_buffer['observation']
-            # 'desired_goal': self.replay_buffer['desired_goal'],
-            # 'achieved_goal': self.replay_buffer['achieved_goal'],
-            # 'cam1':self.replay_buffer['cam1'],
-            # 'cam2':self.replay_buffer['cam2']
+            'observation': self.replay_buffer['observation'],
+            'desired_goal': self.replay_buffer['desired_goal'],
+            'achieved_goal': self.replay_buffer['achieved_goal'],
+            'image':self.replay_buffer['image']
         }
         normalizer = LinearNormalizer()
         normalizer.fit(data=data, last_n_dims=1, mode=mode, **kwargs)
-        normalizer['cam1'] = get_image_range_normalizer()
-        normalizer['cam2'] = get_image_range_normalizer()
+        normalizer['image'] = get_image_range_normalizer()
         return normalizer
 
     def __len__(self) -> int:
         return len(self.sampler)
 
     def _sample_to_data(self, sample):
-        observation = sample['observation'][0:3].astype(np.float32)
-        # desired_goal = sample['desired_goal']
-        # achieved_goal = sample['achieved_goal']
-        cam1 = np.moveaxis(sample['cam1'],-1,1)/255
-        cam2 = np.moveaxis(sample['cam2'],-1,1)/255
-
+        #agent_pos = sample['observation'][0:3].astype(np.float32) # (agent_posx2, block_posex3)
+        #task_pos = sample['desired_goal'][0:3].astype(np.float32)
+        observation = sample['observation']
+        desired_goal = sample['desired_goal']
+        achieved_goal = sample['achieved_goal']
+        image = np.moveaxis(sample['image'],-1,1)/255
+        #image = sample['image']
         data = {
             'obs': {
-                'cam1': cam1, # T, 3, 96, 96
-                'cam2': cam2,  
-                'observation' : observation
-                # 'desired_goal' : desired_goal,
-                # 'achieved_goal' : achieved_goal
+                'image': image, # T, 3, 96, 96
+                'observation' : observation,
+                'desired_goal' : desired_goal,
+                'achieved_goal' : achieved_goal
             },
             'action': sample['action'].astype(np.float32) # T, 2
         }
